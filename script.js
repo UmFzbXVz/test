@@ -50,19 +50,22 @@ const canvas = document.getElementById('vertical-canvas');
 const ctx = canvas.getContext('2d');
 
 const runeSize = 64;
-const lineHeightFactor = 0.70; 
-
+const lineHeightFactor = 0.70;
 const leftPadding = 20;
 
 function drawVerticalRunes() {
     const runes = translateToRunes(input.value);
     const displayRunes = runes || 'ᛖᛗᛗᛖ';
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const width = canvas.offsetWidth;
+    const height = canvas.offsetHeight;
+
+    ctx.clearRect(0, 0, width, height);
 
     ctx.font = `${runeSize}px 'Segoe UI', Arial, sans-serif`;
     ctx.fillStyle = '#ddd';
     ctx.textBaseline = 'middle';
+    ctx.textAlign = 'left';
 
     let maxRuneWidth = 0;
     for (const rune of displayRunes) {
@@ -73,12 +76,12 @@ function drawVerticalRunes() {
     }
 
     const columnWidth = maxRuneWidth + leftPadding * 2;
-    const columnStartX = (canvas.width - columnWidth) / 2;
+    const columnStartX = (width - columnWidth) / 2;
     const runeStartX = columnStartX + leftPadding;
-    const totalRuneHeight = displayRunes.length * runeSize * lineHeightFactor;
-    let y = (canvas.height - totalRuneHeight) / 2 + (runeSize * lineHeightFactor / 2);
 
-    ctx.textAlign = 'left';
+    const totalRuneHeight = displayRunes.length * runeSize * lineHeightFactor;
+    let y = (height - totalRuneHeight) / 2 + (runeSize * lineHeightFactor / 2);
+
     for (const rune of displayRunes) {
         ctx.fillText(rune, runeStartX, y);
         y += runeSize * lineHeightFactor;
@@ -87,8 +90,10 @@ function drawVerticalRunes() {
 
 function resizeCanvas() {
     const dpr = window.devicePixelRatio || 1;
+
     canvas.width = canvas.offsetWidth * dpr;
     canvas.height = canvas.offsetHeight * dpr;
+
     ctx.scale(dpr, dpr);
 
     drawVerticalRunes();
@@ -105,6 +110,7 @@ function updateAll() {
 }
 
 window.addEventListener('resize', resizeCanvas);
+window.addEventListener('orientationchange', resizeCanvas);
 input.addEventListener('input', updateAll);
 
 resizeCanvas();
